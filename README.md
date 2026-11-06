@@ -176,21 +176,102 @@ __Expected outcome:__ Events are visible in Splunk Search.
 
 Once data ingestion was confirmed, SPL searches were developed to monitor authentication and endpoint activity.
 
-Failed Authentication
+### Failed Authentication
+
+```spl
 index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
 | stats count by host
+```
+<img width="1920" height="919" alt="Failed authentication" src="https://github.com/user-attachments/assets/bf171875-0d0a-4ee7-b572-0b37bc106ff5" />
 
-index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+
+## Successful Authentication
+```spl
+index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4624 earliest=-24h
 | stats count by host
+```
+<img width="1920" height="924" alt="Successful Authentication" src="https://github.com/user-attachments/assets/7168e521-a575-4491-bf2d-b6846cf9d0b8" />
+
+
+## Top Accounts Targeted by Failed Logons
+```spl
+index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+| rex field=Message "(?s)Account For Which Logon Failed:.*?Account Name:\s+(?<target_account>[^\r\n]+)"
+| eval account=coalesce(target_account,TargetUserName,Account_Name)
+| where isnotnull(account) AND account!="-"
+| stats count AS failed_attempts by account
+| sort -failed_attempts
+| head 10
+```
+<img width="1915" height="925" alt="Top Accounts Targeted by Failed Logons" src="https://github.com/user-attachments/assets/ac8a94d9-5dad-4bed-a98a-2510f16c73c8" />
+
+## Process Creation Monitoring
+```spl
+index=sysmon_logs EventCode=1 earliest=-24h
+| where NOT like(Image,"%\\SplunkUniversalForwarder\\%")
+| stats count AS process_creations by Image
+| sort -process_creations
+| head 10
+```
+<img width="1920" height="918" alt="Process Creation Monitoring" src="https://github.com/user-attachments/assets/dccf7eff-9830-4c5f-8234-7b7c7852f8ba" />
+
+## Network Connection Monitoring
+```spl
+index=sysmon_logs EventCode=3 earliest=-24h
+| table _time host User Image SourceIp SourcePort DestinationIp DestinationPort Protocol Initiated
+| sort -_time
+| head 10
+```
+<img width="1908" height="919" alt="Network Connection Monitoring" src="https://github.com/user-attachments/assets/f391072d-acfc-4a1d-adea-d9879c090489" />
+
+__Expected outcome:__ Security activity can be searched, filtered, and analyzed using SPL.
 
 
 
 
+## Step 10: Build the Splunk Dashboard
 
+The final implementation stage involved creating a Classic Simple XML dashboard titled:
 
+__Windows Security Monitoring Dashboard__
 
+Description:
 
+Windows Server security monitoring using Windows Event Logs and Sysmon.
 
+The dashboard was designed to provide an overview of authentication activity and endpoint behavior.
+
+The following panels were created:
+
+1. Total Security Events
+
+2. Failed Logons
+
+3. Successful Logons
+
+4. Sysmon Events
+
+5. Failed vs Successful Logons
+
+6. Failed Logons Over Time
+
+7. Top Accounts Targeted by Failed Logons
+
+8. Windows Logon Types
+
+9. Top Process Creation Activity
+
+10. Recent Sysmon Network Connections
+
+11. Recent Failed Authentication Events
+
+The dashboard uses a combination of single-value panels, column charts, line charts, bar charts, pie charts, and statistics tables.
+
+The searches use a rolling 24-hour time range.
+
+__Expected outcome:__ A centralized dashboard displaying Windows security monitoring information.
+
+__Evidence:splunk-dashboard.png__
 
 
 
