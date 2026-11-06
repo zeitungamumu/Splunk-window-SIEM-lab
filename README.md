@@ -177,8 +177,11 @@ __Expected outcome:__ Events are visible in Splunk Search.
 Once data ingestion was confirmed, SPL searches were developed to monitor authentication and endpoint activity.
 
 Failed Authentication
-'''index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
-| stats count by host'''
+index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+| stats count by host
+
+index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+| stats count by host
 
 
 
