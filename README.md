@@ -11,6 +11,18 @@ Tools & Technology
 
 Architecture
 
+Project implementation
+
+Detection and Investigation
+
+Results and Key Findings
+
+Challenges Encountered
+
+Lessons Learned
+
+Limitations and Future Improvements
+
 # Overview
 This project demonstrates the implementation of a lightweight __Security Information and Event Management (SIEM)__ environment using Splunk.
 
@@ -235,13 +247,13 @@ The final implementation stage involved creating a Classic Simple XML dashboard 
 
 __Windows Security Monitoring Dashboard__
 
-Description:
+__Description:__
 
 Windows Server security monitoring using Windows Event Logs and Sysmon.
 
 The dashboard was designed to provide an overview of authentication activity and endpoint behavior.
 
-The following panels were created:
+__The following panels were created:__
 
 __1. Total Security Events__
 
@@ -276,6 +288,7 @@ __Evidences:__
 ![splunk_dashboard.xml](splunk_dashboard.xml)
 
 ![splunk_dashboard.pdf](splunk_dashboard.pdf)
+
 
 
  # Detection and Investigation
@@ -374,13 +387,13 @@ The investigation also demonstrated that suspicious activity must be evaluated u
 
 Several technical challenges were encountered during implementation.
 
-# Hardware Limitations
+## Hardware Limitations
 
 The physical laptop had limited RAM and available disk space.
 
 __Resolution:__ Splunk Enterprise was installed directly on the Windows 10 host, while Windows Server 2022 remained the monitored virtual machine.
 
-# Network Connectivity
+## Network Connectivity
 
 The Universal Forwarder initially required network and firewall configuration before it could communicate with Splunk Enterprise.
 
@@ -424,6 +437,7 @@ __- Evidence-based security investigations.<br>__
 __An important lesson was that a suspicious event is not automatically proof of compromise.__
 
 __Effective security monitoring requires understanding the context of events, correlating related telemetry, and distinguishing confirmed findings from assumptions.__
+
 
 # Limitations and Future Improvements
 
