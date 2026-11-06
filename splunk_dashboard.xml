@@ -1,0 +1,200 @@
+<dashboard version="1.1" theme="dark">
+  <label>Windows Security Monitoring Dashboard</label>
+  <description>Windows Server security monitoring using Windows Event Logs and Sysmon</description>
+  <row>
+    <panel>
+      <single>
+        <title>Total Security Events</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" earliest=-24h
+| stats count AS "Total Security Events"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xcba700","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100,200]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Failed Logons</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+| stats count AS "Failed Logons"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xd41f1f","0xd41f1f"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Successful Logons</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4624 earliest=-24h
+| stats count AS "Successful Logons"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x118832","0x118832","0xd94e17","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Sysmon Events</title>
+        <search>
+          <query>index=sysmon_logs earliest=-24h
+| stats count AS "Sysmon Events"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xd94e17","0xd41f1f","0xd94e17","0x1182f3"]</option>
+        <option name="rangeValues">[0,30,70,100,200,400,800]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Failed vs Successful Logons</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" (EventCode=4624 OR EventCode=4625) earliest=-24h
+| eval Result=case(EventCode=4624,"Successful",EventCode=4625,"Failed")
+| stats count by Result</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Failed Logons Over Time</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+| timechart span=1h count AS failed_logons
+| where failed_logons &gt; 0</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Top Accounts Targeted by Failed Logons</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+| rex field=Message "(?s)Account For Which Logon Failed:.*?Account Name:\s+(?&lt;target_account&gt;[^\r\n]+)"
+| eval account=coalesce(target_account,TargetUserName,Account_Name)
+| where isnotnull(account) AND account!="-"
+| stats count AS failed_attempts by account
+| sort -failed_attempts
+| head 10</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Windows Logon Types</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" (EventCode=4624 OR EventCode=4625) earliest=-24h
+| rex field=Message "(?s)Logon Type:\s+(?&lt;logon_type&gt;\d+)"
+| eval Logon_Type=case(
+    logon_type="2","Interactive",
+    logon_type="3","Network",
+    logon_type="4","Batch",
+    logon_type="5","Service",
+    logon_type="7","Unlock",
+    logon_type="8","Network Cleartext",
+    logon_type="9","New Credentials",
+    logon_type="10","Remote Interactive (RDP)",
+    logon_type="11","Cached Interactive",
+    true(),"Other"
+)
+| stats count by Logon_Type</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Top Process Creation Activity</title>
+        <search>
+          <query>index=sysmon_logs EventCode=1 earliest=-24h
+| where NOT like(Image,"%\\SplunkUniversalForwarder\\%")
+| stats count AS process_creations by Image
+| sort -process_creations
+| head 10</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <title>Recent Sysmon Network Connections</title>
+        <search>
+          <query>index=sysmon_logs EventCode=3 earliest=-24h
+| table _time host User Image SourceIp SourcePort DestinationIp DestinationPort Protocol Initiated
+| sort -_time
+| head 10</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Recent Failed Authentication Events</title>
+        <search>
+          <query>index=windows_event_logs sourcetype="WinEventLog:Security" EventCode=4625 earliest=-24h
+| rex field=Message "(?s)Account For Which Logon Failed:.*?Account Name:\s+(?&lt;target_account&gt;[^\r\n]+)"
+| rex field=Message "(?s)Logon Type:\s+(?&lt;logon_type&gt;\d+)"
+| rex field=Message "(?s)Source Network Address:\s+(?&lt;source_ip&gt;[^\r\n]+)"
+| rex field=Message "(?s)Workstation Name:\s+(?&lt;workstation&gt;[^\r\n]+)"
+| rex field=Message "(?s)Status:\s+(?&lt;status&gt;[^\r\n]+)"
+| rex field=Message "(?s)Sub Status:\s+(?&lt;sub_status&gt;[^\r\n]+)"
+| table _time host target_account logon_type source_ip workstation status sub_status
+| sort -_time
+| head 25</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
