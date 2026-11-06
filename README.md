@@ -243,27 +243,27 @@ The dashboard was designed to provide an overview of authentication activity and
 
 The following panels were created:
 
-1. Total Security Events
+__1. Total Security Events__
 
-2. Failed Logons
+__2. Failed Logons__
 
-3. Successful Logons
+__3. Successful Logons__
 
-4. Sysmon Events
+__4. Sysmon Events__
 
-5. Failed vs Successful Logons
+__5. Failed vs Successful Logons__
 
-6. Failed Logons Over Time
+__6. Failed Logons Over Time__
 
-7. Top Accounts Targeted by Failed Logons
+__7. Top Accounts Targeted by Failed Logons__
 
-8. Windows Logon Types
+__8. Windows Logon Types__
 
-9. Top Process Creation Activity
+__9. Top Process Creation Activity__
 
-10. Recent Sysmon Network Connections
+__10. Recent Sysmon Network Connections__
 
-11. Recent Failed Authentication Events
+__11. Recent Failed Authentication Events__
 
 The dashboard uses a combination of single-value panels, column charts, line charts, bar charts, pie charts, and statistics tables.
 
@@ -271,7 +271,197 @@ The searches use a rolling 24-hour time range.
 
 __Expected outcome:__ A centralized dashboard displaying Windows security monitoring information.
 
-__Evidence:splunk-dashboard.png__
+__Evidences:__
+
+![splunk_dashboard.xml](splunk_dashboard.xml)
+
+![splunk_dashboard.pdf](splunk_dashboard.pdf)
+
+
+ # Detection and Investigation
+
+A practical investigation was conducted using Windows Security events collected from the Windows Server 2022 machine.
+
+Investigation Scenario
+
+Repeated failed authentication attempts against the Administrator account were identified.
+
+The objective was to determine:
+
+Whether the failed logons were suspicious.
+
+Whether authentication eventually succeeded.
+
+Which account was targeted.
+
+Where the authentication attempts originated.
+
+Whether the activity was associated with remote access.
+
+Whether the available evidence supported an actual security incident.
+
+## Observed Evidence
+4 IT Department, 5 Sales Department and 8 Administrator
+I investigated the Administrator.
+Eight failed Administrator authentication attempts were identified.
+
+|Attribute |Observation|
+| :--- | :---: |
+|Event ID  |   4625    |
+|Account   |  Administrator|
+|Number of failures|8|
+|Logon Type|2 – Interactive|
+|Source Address|127.0.0.1|
+|Status| 0xC000006D|
+|Substatus|0xC000006A|
+|Process|svchost.exe|
+|Process ID| 432 |
+
+The substatus 0xC000006A indicated an incorrect password.
+
+A successful Administrator logon (Event ID 4624) was subsequently observed.
+
+An Event ID 4648 also showed explicit credential usage involving the Administrator account.
+
+## Additional Investigation
+
+Further analysis included:
+
+Reviewing Sysmon process creation events.
+
+Examining the services associated with process ID 432.
+
+Reviewing RemoteConnectionManager and LocalSessionManager logs.
+
+Checking for Windows Remote Interactive logons (Logon Type 10).
+
+Examining related authentication events.
+
+No corresponding Logon Type 10 events were found in the investigated time window.
+
+The process ID was associated with normal Windows services, but the available evidence did not establish the exact initiating component or person responsible for the authentication sequence.
+
+## Investigation Conclusion
+
+__Classification: Inconclusive__
+
+The investigation confirmed that eight failed local interactive Administrator authentication attempts were followed by a successful logon.
+
+However, the available telemetry was insufficient to establish that the activity was malicious or externally initiated.
+
+The investigation therefore did not classify the activity as a confirmed security incident.
+
+
+# Results and Key Findings
+
+The project successfully demonstrated:
+
+- Deployment of Splunk Enterprise.<br>
+- Configuration of a Windows Server endpoint for log collection.<br>
+- Successful communication over the host-only network.<br>
+- Successful forwarding through TCP port 9997.<br>
+- Collection of Windows Security, System, and Application logs.<br>
+- Collection of Sysmon telemetry.<br>
+- Searching and analyzing events using SPL.<br>
+- Monitoring of Windows authentication activity<br>.
+- Investigation of suspicious authentication events.<br>
+- Development of an 11-panel security monitoring dashboard.<br>
+
+The investigation also demonstrated that suspicious activity must be evaluated using multiple sources of evidence before making a security incident determination.
+
+
+# Challenges Encountered
+
+Several technical challenges were encountered during implementation.
+
+# Hardware Limitations
+
+The physical laptop had limited RAM and available disk space.
+
+__Resolution:__ Splunk Enterprise was installed directly on the Windows 10 host, while Windows Server 2022 remained the monitored virtual machine.
+
+# Network Connectivity
+
+The Universal Forwarder initially required network and firewall configuration before it could communicate with Splunk Enterprise.
+
+__Resolution:__ A host-only network was configured, and TCP connectivity was verified on port 9997.
+
+## Forwarder Configuration
+
+Windows Event Log inputs and Sysmon collection required configuration and validation.
+
+__Resolution: The inputs.conf configuration was reviewed and validated.
+
+## Data Analysis
+
+Some authentication events required additional investigation before their meaning could be established.
+
+__Resolution:__ Related Windows Security events, Sysmon activity, process information, and Remote Desktop logs were examined.
+
+## Dashboard Layout
+
+Arranging multiple panels into a readable dashboard required adjustments to the Classic Simple XML layout.
+
+__Resolution:__ Panels were organized into rows and appropriate visualizations were selected for the different searches.
+
+
+# Lessons Learned
+
+This project provided practical experience in:
+
+__- SIEM architecture and implementation.<br>__
+__- Windows event log collection.<br>__
+__- Splunk Enterprise configuration.<br>__
+__- Splunk Universal Forwarder deployment.<br>__
+__- Windows endpoint monitoring.<br>__
+__- Sysmon integration.<br>__
+__- SPL search development.<br>__
+__- Authentication analysis.<br>__
+__- Process and network monitoring.<br>__
+__- Dashboard development.<br>__
+__- Evidence-based security investigations.<br>__
+
+__An important lesson was that a suspicious event is not automatically proof of compromise.__
+
+__Effective security monitoring requires understanding the context of events, correlating related telemetry, and distinguishing confirmed findings from assumptions.__
+
+# Limitations and Future Improvements
+
+## Current Limitations
+
+The lab currently monitors one Windows Server endpoint.
+
+The environment is designed for learning rather than production deployment.
+
+Detection coverage is limited to the configured Windows and Sysmon telemetry.
+
+The investigation did not establish a confirmed malicious incident.
+
+Automated incident response has not been implemented.
+
+## Future Improvements
+
+Potential improvements include:
+
+Add more monitored Windows endpoints.
+
+Integrate Active Directory telemetry.
+
+Develop additional detection rules.
+
+Implement automated alerts.
+
+Improve event correlation.
+
+Develop MITRE ATT&CK-aligned detections.
+
+Add File Integrity Monitoring.
+
+Integrate SOAR capabilities.
+
+Develop automated incident response workflows.
+
+__Note:__ SOAR is a planned future enhancement and is not part of the current implementation.
 
 
 
