@@ -376,7 +376,7 @@ The project successfully demonstrated:
 - Collection of Windows Security, System, and Application logs.<br>
 - Collection of Sysmon telemetry.<br>
 - Searching and analyzing events using SPL.<br>
-- Monitoring of Windows authentication activity<br>.
+- Monitoring of Windows authentication activity.<br>
 - Investigation of suspicious authentication events.<br>
 - Development of an 11-panel security monitoring dashboard.<br>
 
@@ -422,17 +422,17 @@ __Resolution:__ Panels were organized into rows and appropriate visualizations w
 
 This project provided practical experience in:
 
-__- SIEM architecture and implementation.<br>__
-__- Windows event log collection.<br>__
-__- Splunk Enterprise configuration.<br>__
-__- Splunk Universal Forwarder deployment.<br>__
-__- Windows endpoint monitoring.<br>__
-__- Sysmon integration.<br>__
-__- SPL search development.<br>__
-__- Authentication analysis.<br>__
-__- Process and network monitoring.<br>__
-__- Dashboard development.<br>__
-__- Evidence-based security investigations.<br>__
+- __SIEM architecture and implementation.<br>__
+- __Windows event log collection.<br>__
+- __Splunk Enterprise configuration.<br>__
+- __Splunk Universal Forwarder deployment.<br>__
+- __Windows endpoint monitoring.<br>__
+- __Sysmon integration.<br>__
+- __SPL search development.<br>__
+- __Authentication analysis.<br>__
+- __Process and network monitoring.<br>__
+- __Dashboard development.<br>__
+- __Evidence-based security investigations.<br>__
 
 __An important lesson was that a suspicious event is not automatically proof of compromise.__
 
