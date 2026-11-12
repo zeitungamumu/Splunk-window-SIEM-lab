@@ -3,7 +3,7 @@ Hands-on Windows SIEM lab using Splunk Enterprise, Universal Forwarder, Windows 
 
 # Table of Contents
 
-Overview
+[Overview](#overview)
 
 Project Objectives
 
