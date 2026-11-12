@@ -3,25 +3,25 @@ Hands-on Windows SIEM lab using Splunk Enterprise, Universal Forwarder, Windows 
 
 # Table of Contents
 
-[Overview](#overview)
+- [Overview](#overview)
 
-Project Objectives
+- [Project Objectives](#project-objectives)
 
-Tools & Technology
+- [Tools & Technology](#tools--technology)
 
-Architecture
+- [Architecture](#architecture)
 
-Project implementation
+- [Project implementation](#project-implementation)
 
-Detection and Investigation
+- [Detection and Investigation](#detection-and-investigation)
 
-Results and Key Findings
+- [Results and Key Findings](#results-and-key-findings)
 
-Challenges Encountered
+- [Challenges Encountered](#challenges-encountered)
 
-Lessons Learned
+- [Lessons Learned](#lessons-learned)
 
-Limitations and Future Improvements
+- [Limitations and Future Improvements](#limitations-and-future-improvements)
 
 # Overview
 This project demonstrates the implementation of a lightweight __Security Information and Event Management (SIEM)__ environment using Splunk.
