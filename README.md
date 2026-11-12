@@ -295,23 +295,23 @@ __Evidences:__
 
 A practical investigation was conducted using Windows Security events collected from the Windows Server 2022 machine.
 
-Investigation Scenario
+__Investigation Scenario__
 
 Repeated failed authentication attempts against the Administrator account were identified.
 
-The objective was to determine:
+__The objective was to determine:__
 
-Whether the failed logons were suspicious.
+- Whether the failed logons were suspicious.
 
-Whether authentication eventually succeeded.
+- Whether authentication eventually succeeded.
 
-Which account was targeted.
+- Which account was targeted.
 
-Where the authentication attempts originated.
+- Where the authentication attempts originated.
 
-Whether the activity was associated with remote access.
+- Whether the activity was associated with remote access.
 
-Whether the available evidence supported an actual security incident.
+- Whether the available evidence supported an actual security incident.
 
 ## Observed Evidence
 4 IT Department, 5 Sales Department and 8 Administrator
@@ -338,19 +338,19 @@ An Event ID 4648 also showed explicit credential usage involving the Administrat
 
 ## Additional Investigation
 
-Further analysis included:
+__Further analysis included:__
 
-Reviewing Sysmon process creation events.
+- Reviewing Sysmon process creation events.
 
-Examining the services associated with process ID 432.
+- Examining the services associated with process ID 432.
 
-Reviewing RemoteConnectionManager and LocalSessionManager logs.
+- Reviewing RemoteConnectionManager and LocalSessionManager logs.
 
-Checking for Windows Remote Interactive logons (Logon Type 10).
+- Checking for Windows Remote Interactive logons (Logon Type 10).
 
-Examining related authentication events.
+- Examining related authentication events.
 
-No corresponding Logon Type 10 events were found in the investigated time window.
+- No corresponding Logon Type 10 events were found in the investigated time window.
 
 The process ID was associated with normal Windows services, but the available evidence did not establish the exact initiating component or person responsible for the authentication sequence.
 
@@ -403,7 +403,7 @@ __Resolution:__ A host-only network was configured, and TCP connectivity was ver
 
 Windows Event Log inputs and Sysmon collection required configuration and validation.
 
-__Resolution: The inputs.conf configuration was reviewed and validated.
+__Resolution:__ The inputs.conf configuration was reviewed and validated.
 
 ## Data Analysis
 
@@ -443,37 +443,37 @@ __Effective security monitoring requires understanding the context of events, co
 
 ## Current Limitations
 
-The lab currently monitors one Windows Server endpoint.
+- The lab currently monitors one Windows Server endpoint.
 
-The environment is designed for learning rather than production deployment.
+- The environment is designed for learning rather than production deployment.
 
-Detection coverage is limited to the configured Windows and Sysmon telemetry.
+- Detection coverage is limited to the configured Windows and Sysmon telemetry.
 
-The investigation did not establish a confirmed malicious incident.
+- The investigation did not establish a confirmed malicious incident.
 
-Automated incident response has not been implemented.
+- Automated incident response has not been implemented.
 
 ## Future Improvements
 
-Potential improvements include:
+- Potential improvements include:
 
-Add more monitored Windows endpoints.
+- Add more monitored Windows endpoints.
 
-Integrate Active Directory telemetry.
+- Integrate Active Directory telemetry.
 
-Develop additional detection rules.
+- Develop additional detection rules.
 
-Implement automated alerts.
+- Implement automated alerts.
 
-Improve event correlation.
+- Improve event correlation.
 
-Develop MITRE ATT&CK-aligned detections.
+- Develop MITRE ATT&CK-aligned detections.
 
-Add File Integrity Monitoring.
+- Add File Integrity Monitoring.
 
-Integrate SOAR capabilities.
+- Integrate SOAR capabilities.
 
-Develop automated incident response workflows.
+- Develop automated incident response workflows.
 
 __Note:__ SOAR is a planned future enhancement and is not part of the current implementation.
 
